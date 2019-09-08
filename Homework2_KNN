@@ -1,0 +1,50 @@
+import numpy as np
+df = np.loadtxt('/Users/chong97/Desktop/Machine_Learning_1/second_week/bond.txt',encoding='utf-16')
+
+x = df[:,0:9]
+y = df[:,9]
+
+from sklearn.model_selection import train_test_split
+
+x_train, x_test, y_train, y_test = train_test_split(x,y,test_size=0.33,random_state=19)
+
+from sklearn.neighbors import KNeighborsClassifier
+
+knn = KNeighborsClassifier(n_neighbors = 6, p = 2, metric='minkowski')
+knn.fit(x_train,y_train)
+
+import matplotlib.pyplot as plt
+from sklearn import metrics
+
+y_train_pred = knn.predict(x_train)
+
+print("The following matrix is confusion matrix of KNN on training dataset when n_neighbors=6.")
+print("This is the accuracy:")
+print( metrics.accuracy_score(y_train, y_train_pred))
+print("This is the confusion matrix:")
+print( metrics.confusion_matrix(y_train, y_train_pred))
+
+y_pred = knn.predict(x_test)
+
+print("The following matrix is the confusion matrix of KNN on testing dataset when n_neighbors=6.")
+print("This is the accuracy:")
+print( metrics.accuracy_score(y_test, y_pred))
+print("This is the confusion matrix:")
+print( metrics.confusion_matrix(y_test, y_pred))
+
+k_range = range(1,26)
+scores = []
+
+for i in k_range:
+    knn = KNeighborsClassifier(n_neighbors = i)
+    knn.fit(x_train,y_train)
+    y_pred = knn.predict(x_test)
+    scores.append(metrics.accuracy_score(y_test, y_pred))
+
+print("The following curve shows the accuracy of KNN on testing dataset when the n range from 1 to 25.")
+
+plt.plot(k_range, scores, c = 'blue')
+plt.xlabel('The number of neighbors')
+plt.ylabel('Accuracy')
+plt.savefig('original.jpg')
+plt.show()
